@@ -176,29 +176,18 @@ end
 # 24, [10, 7, 1]
 
 def make_better_change(amount, bank = [25, 10, 5, 1])
-  return [amount] if bank.any? {|el| el == amount }
+  coins = bank.select { |coin| coin <= amount }
+  return nil if coins.empty?
 
-  least_coins = 1000
-  change = []
-  bank = bank.select { |c| c <= amount }
-  # debugger
-  bank.each do |coin|
-    change += [coin] + make_better_change(amount - coin, bank)
-    least_coins = change.length if change.length < least_coins
+  result = []
+  coins.each do |coin|
+    remainder = amount - coin
+    if remainder > 0
+      remainder_solution = make_better_change(remainder, coins)
+      result << [coin] + remainder_solution unless remainder_solution.nil?
+    else
+      result << [coin]
+    end
   end
-p least_coins
-change
+  result.sort_by!(&:size).first
 end
-
-=begin
-def make_better_change(amount, bank)
-  least_coins = 100
-  best_sol = nil
-
-  return [amount] if bank.any? { |el| el == amount }
-
-  change = []
-  bank =
-
-end
-=end
