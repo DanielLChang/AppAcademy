@@ -144,20 +144,9 @@ def merge(left, right)
 end
 
 def subsets(arr)
-  return [arr] if arr.empty?
-  last = arr.pop
-
-  subs = []
-  subs = subs + subsets(arr) << [last]
-  subs.each do |s|
-    new_sub = (s.include?(last) ? s : (s + [last]))
-    subs << new_sub unless subs.include?(new_sub)
-  end
-  subs
-  # subs.each do |sub|
-  #   subs << (sub + [last])
-  # end
-  # subs
+  return [[]] if arr.empty?
+  subs = subsets(arr[0..-2])
+  subs.concat(subs.map { |s| s += [arr.last] } )
 end
 
 def greedy_make_change(amount, bank = [25, 10, 5, 1])
