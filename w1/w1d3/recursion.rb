@@ -40,15 +40,9 @@ end
 class Array
 
   def deep_dup
-
-    return self.dup if self.none? { |el| el.is_a?(Array) }
-
-    copy = []
-    self.each do |el|
-      copy << el.deep_dup if el.is_a?(Array)
+    self.map do |el|
+      el.is_a?(Array) ? el.deep_dup : el
     end
-
-    copy
   end
 
 end
@@ -60,16 +54,13 @@ def fib(n)
   two_prev = fib(n - 2).last
   fib(n - 1) << prev_num + two_prev
 end
-=begin
-def permutations(array)
 
-  return [array] if array.length == 1
+def permutations(array)
+  return array if array.length == 1
 
   result = []
-
   num = array.shift
   perms = permutations(array)
-
 
   perms.each do |perm|
     (0..perm.length).each do |idx|
@@ -78,23 +69,6 @@ def permutations(array)
   end
 
   result
-
-end
-=end
-
-def permutations(array)
-  return array if array.length == 1
-  perms = []
-  array.each_index do |idx|
-    # debugger
-    shifted = array.rotate(idx)
-
-    permutations(shifted[1..-1]).each do |arr|
-      perms << [arr].unshift(shifted[0])
-    end
-  end
-  perms.map(&:flatten)
-
 end
 
 def bsearch(array, target)
@@ -148,8 +122,6 @@ def greedy_make_change(amount, bank = [25, 10, 5, 1])
   end
   change
 end
-
-# 24, [10, 7, 1]
 
 def make_better_change(amount, bank = [25, 10, 5, 1])
   coins = bank.select { |coin| coin <= amount }
