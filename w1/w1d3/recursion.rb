@@ -98,41 +98,28 @@ def permutations(array)
 end
 
 def bsearch(array, target)
-  #check to see if array is sorted
-  return unless array == array.sort
+  return nil if array.empty?
+  mid = array.length / 2
 
-  midx = array.length / 2
-  return midx if target == array[midx]
-
-  left = array[0...midx]
-  right = array[midx..-1]
-
-  return nil if left.empty? || right.empty?
-
-  if target < array[midx]
-    bsearch(left, target)
+  if array[mid] == target
+    return mid
+  elsif array[mid] > target
+    return bsearch(array[0...mid], target)
   else
-    begin
-      left.length + bsearch(right, target)
-    rescue
-      return nil
-    end
+    right = bsearch(array[mid + 1..-1], target)
+    right.nil? ? nil : right + mid + 1
   end
-
 end
 
 def merge_sort(arr)
   return arr if arr.length <= 1
-
-  midx = arr.length / 2
-  left, right = arr[0...midx], arr[midx..-1]
-
+  mid = arr.length / 2
+  left, right = arr[0..mid], arr[mid..-1]
   merge(merge_sort(left), merge_sort(right))
 end
 
 def merge(left, right)
   res = []
-
   until left.empty? || right.empty?
     if left[0] <= right[0]
       res << left.shift
@@ -146,7 +133,7 @@ end
 def subsets(arr)
   return [[]] if arr.empty?
   subs = subsets(arr[0..-2])
-  subs.concat(subs.map { |s| s += [arr.last] } )
+  subs.concat(subs.map { |el| el += [arr.last] })
 end
 
 def greedy_make_change(amount, bank = [25, 10, 5, 1])
