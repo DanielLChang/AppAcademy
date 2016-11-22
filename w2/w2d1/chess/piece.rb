@@ -108,6 +108,10 @@ class NullPiece < Piece
     @color = nil
     @symbol = "_"
   end
+
+  def moves
+    []
+  end
 end
 
 class Pawn < Piece

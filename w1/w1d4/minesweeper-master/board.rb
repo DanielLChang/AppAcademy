@@ -2,86 +2,60 @@ require_relative 'tile'
 
 class Board
 
-  DELTAS = [[-1, 1], [-1,0], [-1, -1], [0, -1],
-            [0, 1], [1, 1], [1, 0], [1, -1]]
+  attr_accessor :grid, :size, :num_bombs
 
-  attr_accessor :grid, :size
+  def initialize(size, num_bombs)
+    @size, @num_bombs = size, num_bombs
 
-  def self.empty_grid(size)
-    Array.new(size) do
-      Array.new(size) { Tile.new }
+    @grid = Array.new(@size) do |row|
+      Array.new(@size) do |col|
+        Tile.new(self, [row, col])
+      end
     end
+
+    populate_grid
   end
 
-  def initialize(size)
-    @size = size
-    @grid = Board.empty_grid(size)
+  #bracket method
+  def [](pos)
+    row, col = pos
+    @grid[row][col]
   end
 
+  #plants bombs on board
   def populate_grid
-    bomb_indices = sample_bomb(size)
-    bomb_indices.each do |index|
-      row = index / size
-      col = index % size
-      @grid[row][col].bomb = true
-    end
-  end
+    board_bombs = 0
+    while board_bombs < num_bombs
+      rand_pos = [rand(@grid_size), rand(@grid_size)]
 
-  def sample_bomb(num_bombs)
-    (0...(num_bombs**2)).to_a.sample(size)
-  end
-
-  def neighbors(pos)
-    row, col = pos
-    neighbor_pos = []
-
-    DELTAS.each do |del|
-      new_row = row + del[0]
-      new_col = col + del[1]
-      unless new_row < 0 || new_col < 0
-        neighbor_pos << [new_row, new_col]
-      end
-    end
-
-    neighbor_pos
-  end
-
-  def render
-    puts "  #{(0...size).to_a.join(" ")}"
-    grid.each_with_index do |row, i|
-      puts "#{i} #{row.join(" ")}"
-    end
-  end
-
-  def flag(pos)
-    row, col = pos
-    tile = grid[row][col]
-
-    tile.flag = true
-  end
-
-  def reveal(pos)
-    row, col = pos
-    grid[row][col].reveal = true
-  end
-
-  def reveal_all
-    @grid.each do |row|
-      row.each do |el|
-        el.reveal = true
+      tile = self[rand_pos]
+      unless tile.bomb?
+        tile.plant_bomb
+        board_bombs += 1
       end
     end
   end
 
-  def game_over?
-    popped_bomb? || !found_bombs?
+  #reveal_all = true at end of game
+  def render(reveal_all = false)
+    @grid.map do |row|
+      row.map do |tile|
+        reveal_all ? tile.reveal : tile.render
+      end.join("")
+    end.join("\n")
   end
 
-  def popped_bomb?
-    @grid.flatten.any? { |el| el.bomb? && el.reveal? }
+  #reveal_all
+  def reveal
+    render(true)
   end
 
-  def found_bombs?
-    @grid.flatten.any? { |el| !el.bomb? && !el.reveal? }
+  def lost?
+    @grid.flatten.any? { |tile| tile.bomb? && tile.reveal? }
   end
+
+  def won?
+    @grid.flatten.all? { |tile| tile.bombed? != tile.reveal? }
+  end
+
 end

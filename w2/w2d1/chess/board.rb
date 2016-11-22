@@ -12,12 +12,13 @@ class Board
   end
 
 
-  def [](x, y)
+  def [](pos)
+    x, y = pos
     @grid[x][y]
   end
 
-  def []=(x, y, val)
-    #x, y = pos
+  def []=(pos, val)
+    x, y = pos
     @grid[x][y] = val
   end
 
@@ -26,16 +27,10 @@ class Board
   # end
 
   def move_piece(from_pos, to_pos)
-    x, y = from_pos
-    a, b = to_pos
-    # begin
-    #   @grid[from_pos].is_a?(NullPiece)
-    # rescue
-      # raise "No piece at from_pos"
-      # retry
-    # end
-    @grid[a][b] = @grid[x][y]
-    @grid[x][y] = NullPiece.new
+    # x, y = from_pos
+    # a, b = to_pos
+    @grid[to_pos] = @grid[from_pos]
+    @grid[from_pos] = NullPiece.new
   end
 
   # def move_piece!(from_pos, to_pos)

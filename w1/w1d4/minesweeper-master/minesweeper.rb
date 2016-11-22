@@ -1,51 +1,63 @@
 require_relative 'board'
 
 class MinesweeperGame
-  attr_reader :board
 
-  def initialize(size = 9)
-    @board = Board.new(size)
+  LAYOUTS = {
+    :small => { :size => 9, :num_bombs => 10 },
+    :medium => { :size => 16, :num_bombs => 40 },
+    :large => { :size => 32, :num_bombs => 99 }
+  }
+
+  def initialize(size)
+    layout = LAYOUTS[size]
+    @board = Board.new(layout[:size], layout[:num_bombs])
   end
 
   def play
-    @board.populate_grid
+    until @board.won? || @board.lost?
+      puts @board.render
 
-    until game_over?
-      @board.render
-      com = get_command
-      pos = get_pos
-      do_command(com, pos)
+      action, pos = get_move
+      perform_move(action, pos)
     end
 
-    @board.reveal_all
-    @board.render
+    if @board.won?
+      puts "You win!"
+    elsif @board.lost?
+      puts "**Bomb hit!**"
+      puts @board.reveal
+    end
   end
 
-  def get_command
-    puts "what do you want to do? (f, r)"
-    gets.chomp
+  def get_move
+    action_type, row_s, col_s = gets.chomp.split(",")
+
+    [action_type, [row_s.to_i, col_s.to_i]]
   end
 
-  def get_pos
-    puts "input pos"
-    gets.chomp.split(",").map(&:to_i)
-  end
+  def perform_move(action_type, pos)
+    tile = @board[pos]
 
-  def do_command(com, pos)
-    case com
+    case action_type
     when "f"
-      board.flag(pos)
-    when "r"
-      board.reveal(pos)
-    else
-      puts "invalid command"
+      tile.toggle_flag
+    when "e"
+      tile.explore
+    when "s"
+      # won't quit on save, just hit ctr-c to do that.
+      save
     end
-  end
-
-  def game_over?
-    board.game_over?
   end
 end
 
-game = MinesweeperGame.new(9)
-game.play
+if $PROGRAM_NAME == __FILE__
+  # running as script
+
+  case ARGV.count
+  when 0
+    MinesweeperGame.new(:small).play
+  when 1
+    # resume game, using first argument
+    YAML.load_file(ARGV.shift).play
+  end
+end
