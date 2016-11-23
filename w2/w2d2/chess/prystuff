@@ -1,0 +1,15 @@
+load 'display.rb'
+b = Board.new
+d = Display.new(b)
+
+
+b.move_piece([0,1],[2,0])
+
+b.move_piece([1,0],[2,0])
+
+b.move_piece([6,5],[5,5])
+b.move_piece([1,4],[3,4])
+b.move_piece([6,6],[4,6])
+b.move_piece([0,3],[4,7])
+
+b.grid[7][4].valid_moves
