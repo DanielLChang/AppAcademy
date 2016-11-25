@@ -1,61 +1,61 @@
 require_relative 'tile'
 
 class Board
+  attr_reader :board_size, :num_bombs
 
-  attr_accessor :grid, :size, :num_bombs
+  def initialize(board_size, num_bombs)
+    @board_size, @num_bombs = board_size, num_bombs
 
-  def initialize(size, num_bombs)
-    @size, @num_bombs = size, num_bombs
-
-    @grid = Array.new(@size) do |row|
-      Array.new(@size) do |col|
-        Tile.new(self, [row, col])
-      end
-    end
-
-    populate_grid
+    generate_board
   end
 
-  #bracket method
   def [](pos)
     row, col = pos
     @grid[row][col]
   end
 
-  #plants bombs on board
-  def populate_grid
-    board_bombs = 0
-    while board_bombs < num_bombs
-      rand_pos = [rand(@grid_size), rand(@grid_size)]
-
-      tile = self[rand_pos]
-      unless tile.bomb?
-        tile.plant_bomb
-        board_bombs += 1
-      end
-    end
-  end
-
-  #reveal_all = true at end of game
-  def render(reveal_all = false)
+  #if reveal == true then game is over, reveal all tiles
+  def render(reveal = false)
     @grid.map do |row|
       row.map do |tile|
-        reveal_all ? tile.reveal : tile.render
+        reveal ? tile.reveal : tile.render
       end.join("")
     end.join("\n")
   end
 
-  #reveal_all
   def reveal
     render(true)
   end
 
-  def lost?
-    @grid.flatten.any? { |tile| tile.bomb? && tile.reveal? }
-  end
-
   def won?
-    @grid.flatten.all? { |tile| tile.bombed? != tile.reveal? }
+    @grid.flatten.all? { |tile| tile.bombed? != tile.explored? }
   end
 
+  def lost?
+    @grid.flatten.any? { |tile| tile.bombed? && tile.explored? }
+  end
+
+  private
+  def generate_board
+    @grid = Array.new(@board_size) do |row|
+      Array.new(@board_size) do |col|
+        Tile.new(self, [row, col])
+      end
+    end
+
+    plant_bombs
+  end
+
+  def plant_bombs
+    total_bombs = 0
+    while total_bombs < @num_bombs
+      rand_pos = Array.new(2) { rand(@board_size) }
+
+      unless tile.bombed?
+        tile = self[rand_pos]
+        tile.plant_bomb
+        total_bombs += 1
+      end
+    end
+  end
 end

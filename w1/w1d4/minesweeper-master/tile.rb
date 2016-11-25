@@ -1,40 +1,38 @@
-require 'colorize'
-
 class Tile
+  DELTAS = [
+    [-1, -1],
+    [-1,  0],
+    [-1,  1],
+    [ 0, -1],
+    [ 0,  1],
+    [ 1, -1],
+    [ 1,  0],
+    [ 1,  1]
+  ]
 
-  DELTAS = [[-1, 1], [-1, 0], [-1, -1], [0, -1],
-            [1, -1], [1, 0], [1, 1], [1, -1]].freeze
-
-  attr_accessor :board, :pos, :bomb, :looked_at, :flag
+  attr_reader :pos
 
   def initialize(board, pos)
-    @board = board
-    @pos = pos
-    @bomb, @looked_at, @flag = false, false, false
+    @board, @pos = board, pos
+    @bombed, @explored, @flagged = false, false, false
   end
 
-  #is tile revealed?
-  def bomb?
-    @bomb
+  # ugh. can't have an ivar ending in a '?' means we can't use
+  # attr_reader.
+  def bombed?
+    @bombed
   end
 
-  #is tile looked_at?
-  def looked_at?
-    @looked_at
+  def explored?
+    @explored
   end
 
-  #is tile flagged?
-  def flag?
-    @flag
+  def flagged?
+    @flagged
   end
 
-  #plants bomb
-  def plant_bomb
-    @bomb = true
-  end
-
-  def toggle_flag
-    @flagged = !@flagged unless @looked_at
+  def adjacent_bomb_count
+    neighbors.select(&:bombed?).count
   end
 
   def explore
@@ -52,28 +50,35 @@ class Tile
     self
   end
 
-  #returns array of neighboring tiles
-  def neighbors
-    neighbor_pos = DELTAS.map do |(dx, dy)|
-      [pos[0] + dx, pos[1] + dy]
-    end
-    #selects coords in board range
-    neighbor_pos.select do |row, col|
-      [row, col].all? { |pos| pos.between?(0, @board.length - 1) }
-    end
-    #maps with position on board
-    neighbor_pos.map { |pos| @board[pos] }
+  def inspect
+    # don't show me the whole board when inspecting a Tile; that's
+    # information overload.
+    { :pos => pos,
+      :bombed => bombed?,
+      :flagged => flagged?,
+      :explored => explored? }.inspect
   end
 
-  #returns count of neighoring tiles that have bomb
-  def adjacent_bomb_count
-    neighbors.select(&:bomb?).count
+  def neighbors
+    adjacent_coords = DELTAS.map do |(dx, dy)|
+      [pos[0] + dx, pos[1] + dy]
+    end.select do |row, col|
+      [row, col].all? do |coord|
+        coord.between?(0, @board.grid_size - 1)
+      end
+    end
+
+    adjacent_coords.map { |pos| @board[pos] }
+  end
+
+  def plant_bomb
+    @bombed = true
   end
 
   def render
-    if flag?
+    if flagged?
       "F"
-    elsif looked_at?
+    elsif explored?
       adjacent_bomb_count == 0 ? "_" : adjacent_bomb_count.to_s
     else
       "*"
@@ -81,13 +86,20 @@ class Tile
   end
 
   def reveal
-    if flag?
-      bomb? ? "F" : "f"
-    elsif bomb?
-      looked_at? ? "X" : "B"
+    # used to fully reveal the board at game end
+    if flagged?
+      # mark true and false flags
+      bombed? ? "F" : "f"
+    elsif bombed?
+      # display a hit bomb as an X
+      explored? ? "X" : "B"
     else
       adjacent_bomb_count == 0 ? "_" : adjacent_bomb_count.to_s
     end
   end
 
+  def toggle_flag
+    # ignore flagging of explored squares
+    @flagged = !@flagged unless @explored
+  end
 end
