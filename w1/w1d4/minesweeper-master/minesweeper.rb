@@ -1,3 +1,4 @@
+require 'byebug'
 require 'yaml'
 require_relative 'board'
 
@@ -31,6 +32,7 @@ class MinesweeperGame
 
   private
   def get_move
+    puts "input move (f, e, s)"
     action_type, row, col = gets.chomp.split(",")
 
     [action_type, [row.to_i, col.to_i]]
@@ -38,6 +40,7 @@ class MinesweeperGame
 
   def perform_move(action_type, pos)
     tile = @board[pos]
+    # debugger
 
     case action_type
     when "f"
@@ -59,7 +62,6 @@ class MinesweeperGame
 end
 
 if $PROGRAM_NAME == __FILE__
-
   case ARGV.count
   when 0
     MinesweeperGame.new(:small).play

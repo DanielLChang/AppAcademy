@@ -50,6 +50,7 @@ class Board
     total_bombs = 0
     while total_bombs < @num_bombs
       rand_pos = Array.new(2) { rand(@board_size) }
+      tile = self[rand_pos]
 
       unless tile.bombed?
         tile = self[rand_pos]

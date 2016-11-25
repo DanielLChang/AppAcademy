@@ -50,7 +50,7 @@ class Tile
       [pos[0] + dx, pos[1] + dy]
     end.select do |row, col|
       [row, col].all? do |coord|
-        coord.between?(0, @board.grid_size - 1)
+        coord.between?(0, @board.board_size - 1)
       end
     end
 
