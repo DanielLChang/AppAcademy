@@ -71,21 +71,22 @@ class Tile
     end
   end
 
+  #when revealing all tiles
   def reveal
-    # used to fully reveal the board at game end
     if flagged?
-      # mark true and false flags
+      # "F" == correct "f" == wrong
       bombed? ? "F" : "f"
     elsif bombed?
-      # display a hit bomb as an X
+      # if selected bomb, "x", else "b"
       explored? ? "X" : "B"
     else
       adjacent_bomb_count == 0 ? "_" : adjacent_bomb_count.to_s
     end
   end
 
+  #toggles between flagged/unflagged
+  #won't flag explored spots
   def toggle_flag
-    # ignore flagging of explored squares
     @flagged = !@flagged unless @explored
   end
 end
