@@ -1,14 +1,6 @@
 class Tile
-  DELTAS = [
-    [-1, -1],
-    [-1,  0],
-    [-1,  1],
-    [ 0, -1],
-    [ 0,  1],
-    [ 1, -1],
-    [ 1,  0],
-    [ 1,  1]
-  ]
+  DELTAS = [[-1, -1], [-1, 0], [-1, 1], [ 0, -1],
+            [ 0,  1], [ 1, -1], [ 1, 0], [ 1, 1]].freeze
 
   attr_reader :pos
 
@@ -17,8 +9,7 @@ class Tile
     @bombed, @explored, @flagged = false, false, false
   end
 
-  # ugh. can't have an ivar ending in a '?' means we can't use
-  # attr_reader.
+  #check if tile is bombed/explored/flagged
   def bombed?
     @bombed
   end
@@ -31,36 +22,31 @@ class Tile
     @flagged
   end
 
+  #count number of bombs surrounding tile
   def adjacent_bomb_count
     neighbors.select(&:bombed?).count
   end
 
+  #explores tile
   def explore
-    # don't explore a location user thinks is bombed.
-    return self if flagged?
-
-    # don't revisit previously explored tiles
-    return self if explored?
+    return self if flagged? || explored?
 
     @explored = true
-    if !bombed? && adjacent_bomb_count == 0
-      neighbors.each { |adj_tile| adj_tile.explore }
-    end
+    #keeps exploring neighboring ones without bomb
+    neighbors.each(&:explore) if !bombed? && adjacent_bomb_count == 0
 
     self
   end
 
   def inspect
-    # don't show me the whole board when inspecting a Tile; that's
-    # information overload.
-    { :pos => pos,
-      :bombed => bombed?,
-      :flagged => flagged?,
-      :explored => explored? }.inspect
+    { pos: pos,
+      bombed: bombed?,
+      flagged: flagged?,
+      explored: explored? }.inspect
   end
 
   def neighbors
-    adjacent_coords = DELTAS.map do |(dx, dy)|
+    neighbor_coords = DELTAS.map do |(dx, dy)|
       [pos[0] + dx, pos[1] + dy]
     end.select do |row, col|
       [row, col].all? do |coord|
@@ -68,7 +54,7 @@ class Tile
       end
     end
 
-    adjacent_coords.map { |pos| @board[pos] }
+    neighbor_coords.map { |pos| @board[pos] }
   end
 
   def plant_bomb
