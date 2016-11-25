@@ -1,38 +1,39 @@
+require 'yaml'
 require_relative 'board'
 
 class MinesweeperGame
-
   LAYOUTS = {
-    :small => { :size => 9, :num_bombs => 10 },
-    :medium => { :size => 16, :num_bombs => 40 },
-    :large => { :size => 32, :num_bombs => 99 }
-  }
+    small: { board_size: 9, num_bombs: 10 },
+    medium: { board_size: 16, num_bombs: 40 },
+    large: { board_size: 32, num_bombs: 99 }.freeze
+  }.freeze
 
   def initialize(size)
     layout = LAYOUTS[size]
-    @board = Board.new(layout[:size], layout[:num_bombs])
+    @board = Board.new(layout[:board_size], layout[:num_bombs])
   end
 
   def play
     until @board.won? || @board.lost?
       puts @board.render
 
-      action, pos = get_move
-      perform_move(action, pos)
+      move, pos = get_move
+      perform_move(move, pos)
     end
 
     if @board.won?
       puts "You win!"
     elsif @board.lost?
-      puts "**Bomb hit!**"
+      puts "you hit a bomb"
       puts @board.reveal
     end
   end
 
+  private
   def get_move
-    action_type, row_s, col_s = gets.chomp.split(",")
+    action_type, row, col = gets.chomp.split(",")
 
-    [action_type, [row_s.to_i, col_s.to_i]]
+    [action_type, [row.to_i, col.to_i]]
   end
 
   def perform_move(action_type, pos)
@@ -48,16 +49,21 @@ class MinesweeperGame
       save
     end
   end
+
+  def save
+    puts "Enter filename to save at:"
+    filename = gets.chomp
+
+    File.write(filename, YAML.dump(self))
+  end
 end
 
 if $PROGRAM_NAME == __FILE__
-  # running as script
 
   case ARGV.count
   when 0
     MinesweeperGame.new(:small).play
   when 1
-    # resume game, using first argument
     YAML.load_file(ARGV.shift).play
   end
 end
