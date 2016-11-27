@@ -14,6 +14,10 @@ class Hand
   end
 
   def trade_cards(old_cards, new_cards)
+    raise "must have five cards" unless old_cards.count == new_cards.count
+    raise "cannot discard unowned card" unless has_cards?(old_cards)
+    discard_cards(old_cards)
+    take_cards(new_cards)
   end
 
   def to_s
@@ -21,10 +25,12 @@ class Hand
   end
 
   private
+  
   def sort!
   end
 
   def take_cards(cards)
+    @cards.push(cards)
   end
 
   def discard_cards(old_cards)
