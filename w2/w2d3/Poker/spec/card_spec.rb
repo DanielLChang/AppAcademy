@@ -1,48 +1,47 @@
-require 'card'
 require 'rspec'
+require 'card'
 
-describe "Card" do
-  subject(:card) { Card.new("K", "c") }
-  let(:higher_value_card) { Card.new("A", "c") }
-  let(:lower_value_card) { Card.new("Q", "c") }
-  let(:higher_suit_card) { Card.new("K", "s") }
-  let(:lower_suit_card) { Card.new("K", "d") }
+describe Card do
+  describe '#initialize' do
+    subject(:card) { Card.new(:spades, :ten) }
 
-  describe "#initialize" do
-    it "is created with a value" do
-      expect(card.value).to eq("K")
+    it 'sets up a card correctly' do
+      expect(card.suit).to eq(:spades)
+      expect(card.value).to eq(:ten)
     end
 
-    it "is created with a suit" do
-      expect(card.suit).to eq("c")
+    it 'raises an error with an invalid suit' do
+      expect do
+        Card.new(:test, :ten)
+      end.to raise_error
     end
 
-    context "if given value/suit is not in a real deck" do
-      it "raises an error when invalid value" do
-        expect { Card.new("X", "c") }.to raise_error("Invalid value.")
-      end
-
-      it "raises an error when invalid suit" do
-        expect { Card.new("K", "x") }.to raise_error("Invalid suit.")
-      end
+    it 'raises an error with an invalid value' do
+      expect do
+        Card.new(:spades, :test)
+      end.to raise_error
     end
   end
 
-  describe "#compare" do
-    context "when two cards have the different values" do
-      it "returns higher card based on value" do
-        expect(card.compare(higher_value_card)).to be(higher_value_card)
-        expect(card.compare(lower_value_card)).to be(card)
-      end
+  describe '#<=>' do
+    it 'should return 0 when cards are the same' do
+      expect(Card.new(:spades, :ten) <=> Card.new(:spades, :ten)).to eq(0)
     end
 
-    context "when two cards have the same value but different suit" do
-      it "returns higher card based on suit" do
-        expect(card.compare(higher_suit_card)).to be(higher_suit_card)
-        expect(card.compare(lower_suit_card)).to be(card)
-      end
+    it 'should return 1 when card has higher value' do
+      expect(Card.new(:spades, :ace) <=> Card.new(:spades, :ten)).to eq(1)
     end
 
+    it 'should return 1 when card has same value but higher suit' do
+      expect(Card.new(:spades, :ace) <=> Card.new(:hearts, :ace)).to eq(1)
+    end
 
+    it 'should return -1 when card has lower value' do
+      expect(Card.new(:spades, :ten) <=> Card.new(:spades, :ace)).to eq(-1)
+    end
+
+    it 'should return -1 when card has same value but lower suit' do
+      expect(Card.new(:hearts, :ace) <=> Card.new(:spades, :ace)).to eq(-1)
+    end
   end
 end

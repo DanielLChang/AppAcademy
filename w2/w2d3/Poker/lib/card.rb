@@ -1,40 +1,58 @@
 class Card
+  include Comparable
 
-  attr_reader :value, :suit
+  SUIT_STRINGS = {
+    :clubs    => "♣",
+    :diamonds => "♦",
+    :hearts   => "♥",
+    :spades   => "♠"
+  }
 
-  VALUES = %w(2 3 4 5 6 7 8 9 10 J Q K A).freeze
-  SUITS = %w(d c h s).freeze
-
-  def self.values
-    VALUES
-  end
+  VALUE_STRINGS = {
+    :two   => "2",
+    :three => "3",
+    :four  => "4",
+    :five  => "5",
+    :six   => "6",
+    :seven => "7",
+    :eight => "8",
+    :nine  => "9",
+    :ten   => "10",
+    :jack  => "J",
+    :queen => "Q",
+    :king  => "K",
+    :ace   => "A"
+  }
 
   def self.suits
-    SUITS
+    SUIT_STRINGS.keys
   end
 
-  def initialize(value, suit)
-    raise "Invalid value." unless VALUES.include?(value)
-    raise "Invalid suit." unless SUITS.include?(suit)
-
-    @value, @suit = value, suit
+  def self.royal_values
+    VALUE_STRINGS.keys[-5..-1]
   end
 
-  def compare(other_card)
+  def self.values
+    VALUE_STRINGS.keys
+  end
 
-    case VALUES.index(self.value) <=> VALUES.index(other_card.value)
-    when 0
-      case SUITS.index(self.suit) <=> SUITS.index(other_card.suit)
-      when -1
-        other_card
-      when 1
-        self
-      end
-    when 1
-      self
-    when -1
-      other_card
+  attr_reader :suit, :value
+
+  def initialize(suit, value)
+    unless Card.suits.include?(suit) && Card.values.include?(value)
+      raise "illegal suit (#{suit.inspect}) or value (#{value.inspect})"
     end
+
+    @suit, @value = suit, value
   end
 
+  def to_s
+    VALUE_STRINGS[value] + SUIT_STRINGS[suit]
+  end
+
+  def ==(other_card)
+  end
+
+  def <=>(other_card)
+  end
 end

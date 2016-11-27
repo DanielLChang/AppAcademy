@@ -1,36 +1,26 @@
-require_relative 'card'
+require_relative './card'
+require_relative './hand'
 
 class Deck
-
-  attr_accessor :deck, :@discarded_cards
-
-  def initialize
-    @deck = populate_deck
-    @discarded_cards = []
+  def self.all_cards
   end
 
-  def populate_deck
-    result = []
-    Card.values.each do |value|
-      Card.suits.each do |suit|
-        result << Card.new(value, suit)
-      end
-    end
-    result
+  def initialize(cards = Deck.all_cards)
+    @cards = cards
   end
 
-  def shuffle!
-    @deck.shuffle!
+  def deal_hand
   end
 
-  def deal
-    card = @deck.shift
-    @discarded_cards << card
+  def count
   end
 
-  def return_cards(card)
-    until @discarded_cards.empty?
-      @deck << @discarded_cards.shift
-    end
+  def take(n)
+  end
+
+  def return(cards)
+  end
+
+  def shuffle
   end
 end
