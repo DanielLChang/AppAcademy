@@ -11,6 +11,7 @@ class Hand
   end
 
   def self.winner(hands)
+    hands.sort.last
   end
 
   def trade_cards(old_cards, new_cards)
@@ -18,6 +19,7 @@ class Hand
     raise "cannot discard unowned card" unless has_cards?(old_cards)
     discard_cards(old_cards)
     take_cards(new_cards)
+    sort!
   end
 
   def to_s
@@ -25,17 +27,22 @@ class Hand
   end
 
   private
-  
+
   def sort!
+    @cards = @cards.sort
   end
 
   def take_cards(cards)
-    @cards.push(cards)
+    @cards.push(*cards)
   end
 
   def discard_cards(old_cards)
+    old_cards.each do |old_card|
+      @cards.delete(old_card)
+    end
   end
 
   def has_cards?(old_cards)
+    old_cards.all? { |old_card| @cards.include?(old_card) }
   end
 end
