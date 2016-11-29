@@ -172,7 +172,7 @@ def haymarket_and_leith
   # 115 and 137 ('Haymarket' and 'Leith')
   execute(<<-SQL)
   SELECT
-    
+    routes
   SQL
 end
 
