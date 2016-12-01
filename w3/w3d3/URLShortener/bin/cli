@@ -1,0 +1,21 @@
+puts "Input your email:\n> "
+user_email = gets.chomp
+user = User.create!(email: user_email)
+
+puts "What do you want to do?\n0. Create shortened URL\n1. Visit shortened URL\n> "
+action = gets.chomp
+
+case action
+when '0'
+  puts "Type in your long URL"
+  long_url = gets.chomp
+  puts "Short URL is: #{Url.create_for_user_and_long_url!(user, long_url)}\nGoodbye!"
+when '1'
+  puts "Type in the shortened URL"
+  short_url = gets.chomp
+  shortened_url = Url.find_by_short_url(short_url)
+  puts "Launching #{Launchy.open(shortened_url)}"
+end
+
+## Add has_many to tagging from user and url
+## Add tag information through tagging.rb
