@@ -10,7 +10,7 @@ class AttrAccessorObject
       define_method("#{name}=") do |value|
         self.instance_variable_set("@#{name}", value)
       end
-      
+
     end
 
   end
