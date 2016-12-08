@@ -6,6 +6,13 @@
   <%= @track.lyrics %>
 </p>
 
+<%= render "notes/form", track: @track %>
+
+<h3>Notes</h3>
+<% @track.notes.each do |note| %>
+  <%= render "notes/note", note: note %>
+<% end %>
+
 <h3>LINKS</h3>
 <ul>
   <li><%= link_to "EDIT TRACK", edit_track_url(@track) %></li>

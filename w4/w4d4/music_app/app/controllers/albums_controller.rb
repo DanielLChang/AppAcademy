@@ -1,4 +1,5 @@
 class AlbumsController < ApplicationController
+  before_action :must_login
 
   def show
     @album = Album.find(params[:id])
