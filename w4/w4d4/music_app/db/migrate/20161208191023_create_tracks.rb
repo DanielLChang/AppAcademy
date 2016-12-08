@@ -10,7 +10,6 @@ class CreateTracks < ActiveRecord::Migration
       t.timestamps null: false
     end
 
-    add_index :tracks, :album_id, unique: true
-    add_index :tracks, :ord, unique: true
+    add_index :tracks, [:album_id, :ord], unique: true
   end
 end
