@@ -8,6 +8,19 @@
 </head>
 <body>
 
+<% if logged_in? %>
+  <p>
+    LOGGED IN AS: <%= current_user.email %>
+  </p>
+  <%= button_to "SIGN OUT", session_url, method: :delete %>
+<% end %>
+
+<% if flash[:messages] %>
+  <p>
+    <%= flash[:messages] %>
+  </p>
+<% end %>
+
 <%= yield %>
 
 </body>
