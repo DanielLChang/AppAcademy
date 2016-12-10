@@ -1,0 +1,16 @@
+<h1><%= @sub.title %></h1>
+<h2>Moderator: <%= @sub.moderator.username %></h2>
+<ul>
+  <% @sub.posts.each do |post| %>
+    <li>
+      <%= link_to post.title, post_url(post) %>
+    </li>
+  <% end %>
+</ul>
+
+<!-- add post -->
+<%= link_to "ADD POST", new_post_url(sub_id: @sub.id) %>
+
+<br>
+
+<%= link_to "BACK TO SUBS", subs_url %>

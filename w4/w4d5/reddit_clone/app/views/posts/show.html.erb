@@ -1,0 +1,9 @@
+<h1><%= @post.title %></h1>
+<h2>Author: <%= @post.author.username %></h2>
+
+<h3>content</h3>
+<%= @post.content %>
+<br>
+<br>
+<!-- add post -->
+<%= link_to "BACK TO SUB", sub_url(@post.sub_id) %>
