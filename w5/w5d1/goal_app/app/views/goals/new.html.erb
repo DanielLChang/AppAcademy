@@ -1,0 +1,11 @@
+<h1>Add Goal</h1>
+
+<form action="/goals" method="post">
+  <%= auth_token %>
+
+  <label for="body">Body</label>
+  <input id="body" type="text" name="goal[body]">
+
+  <input type="submit" value="Add Goal">
+
+</form>

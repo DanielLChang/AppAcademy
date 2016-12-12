@@ -1,0 +1,19 @@
+<h1>All Goals</h1>
+
+<form action="/goals" method="post">
+  <%= auth_token %>
+
+  <h3>Goals</h3>
+  <ul>
+    <% @goals.each do |goal| %>
+      <li>
+        <%= goal %>
+        <%= button_to "DELETE GOAL", goal_url(goal), method: :delete %>
+        <%= button_to "EDIT GOAL", edit_goal_url(goal) %>
+      </li>
+    <% end %>
+  </ul>
+
+  <%= link_to "ADD GOAL", new_goal_url %>
+
+</form>
