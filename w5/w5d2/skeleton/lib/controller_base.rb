@@ -7,10 +7,12 @@ class ControllerBase
   attr_reader :req, :res, :params
 
   # Setup the controller
-  def initialize(req, res)
+  def initialize(req, res, route_params = {})
     @req = req
     @res = res
+    @params = route_params.merge(req.params)
     @already_built_response = false
+    @@protect_from_forgery ||= false
   end
 
   # Helper method to alias @already_built_response
@@ -28,6 +30,8 @@ class ControllerBase
 
     @already_built_response = true
 
+    session.store_session(@res)
+
   end
 
   # Populate the response with content.
@@ -36,11 +40,14 @@ class ControllerBase
   def render_content(content, content_type)
 
     raise "double render error" if already_built_response?
-    
+
     @res.write(content)
     @res['Content-Type'] = content_type
 
     @already_built_response = true
+
+    session.store_session(@res)
+
   end
 
   # use ERB and binding to evaluate templates
@@ -62,9 +69,20 @@ class ControllerBase
 
   # method exposing a `Session` object
   def session
+    @session ||= Session.new(@req)
   end
 
   # use this with the router to call action_name (:index, :show, :create...)
   def invoke_action(name)
+
+    if protect_from_forgery? && req.request_method != "GET"
+      check_authenticity_token
+    else
+      form_authenticity_token
+    end
+
+    self.send(name)
+    render(name) unless already_built_response?
+
   end
 end
