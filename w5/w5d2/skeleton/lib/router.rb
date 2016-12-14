@@ -10,18 +10,22 @@ class Route
 
   # checks if pattern matches path and method matches request method
   def matches?(req)
-    (@http_method == req.request_method.downcase.to_sym) &&
-    (@pattern =~ req.path)
+    req_method = req.request_method.downcase.to_sym
+    (@http_method == req_method) && (@pattern =~ req.path)
   end
 
   # use pattern to pull out route params (save for later?)
   # instantiate controller and call controller action
   def run(req, res)
-    matched = @pattern.match(req.path)
+    route_params = {}
+    pattern_params = @pattern.match(req.path)
 
-    route_params = Hash[matched.names.zip(matched.captures)]
+    pattern_params.names.each do |key|
+      route_params[key] = pattern_params[key]
+    end
 
-    @controller_class.new(req, res, route_params).invoke_action(@action_name)
+    controller = @controller_class.new(req, res, route_params)
+    controller.invoke_action(@action_name)
   end
 end
 
@@ -40,7 +44,7 @@ class Router
   # evaluate the proc in the context of the instance
   # for syntactic sugar :)
   def draw(&proc)
-    instance_eval(&proc)
+    self.instance_eval(&proc)
   end
 
   # make each of these methods that
@@ -58,10 +62,8 @@ class Router
 
   # either throw 404 or call run on a matched route
   def run(req, res)
-    
-    matching_route = match(req)
-
-    matching_route.nil? ? res.status = 404 : matching_route.run(req, res)
+    route = match(req)
+    route.nil? ? res.status = 404 : route.run(req, res)
 
   end
 end
