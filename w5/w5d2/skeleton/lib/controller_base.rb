@@ -43,6 +43,7 @@ class ControllerBase
     @already_built_response = true
 
     session.store_session(@res)
+    flash.store_flash(@res)
 
   end
 
@@ -59,6 +60,7 @@ class ControllerBase
     @already_built_response = true
 
     session.store_session(@res)
+    flash.store_flash(@res)
 
   end
 
