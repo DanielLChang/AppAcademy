@@ -12,10 +12,22 @@ class ControllerBase
     @res = res
     @params = route_params.merge(req.params)
     @already_built_response = false
-    @@protect_from_forgery ||= false
   end
 
   # Helper method to alias @already_built_response
+
+  def protect_from_forgery
+    @authenticity_token = generate_authenticity_token
+  end
+
+  def authenticity_token
+    @authenticity_token
+  end
+
+  def generate_authenticity_token
+    SecureRandom.urlsafe_base64(128)
+  end
+
   def already_built_response?
     @already_built_response
   end
@@ -54,16 +66,14 @@ class ControllerBase
   # pass the rendered html to render_content
   def render(template_name)
 
-    path = File.dirname(__FILE__)
+    controller_name = self.class.name.underscore
+    path = "views/#{controller_name}/#{template_name}.html.erb"
+    content = File.read(path)
 
-    full_name = File.join(path, "..", "views",
-                          self.class.name.underscore,
-                          "#{template_name}.html.erb"
-                         )
+    content = ERB.new(content).result(binding)
+    content_type = "text/html"
 
-    template_code = ERB.new(File.read(full_name)).result(binding)
-
-    render_content(template_code, "text/html")
+    render_content(content, content_type)
 
   end
 
@@ -75,25 +85,9 @@ class ControllerBase
   # use this with the router to call action_name (:index, :show, :create...)
   def invoke_action(name)
 
-    if protect_from_forgery? && req.request_method != "GET"
-      cookie = @req.cookies["authenticity_token"]
-      unless cookie && cookie == params["authenticity_token"]
-        raise "Invalid authenticity token"
-      end
-    else
-      @token ||= SecureRandom.urlsafe_base64(128)
-      res.set_cookie('authenticity_token', value: @token, path: '/')
-      @token
-    end
-
-    self.send(name)
+    send(name)
     render(name) unless already_built_response?
 
   end
 
-  def protect_from_forgery?
-    @@protect_from_forgery
-  end
-
-  
 end
