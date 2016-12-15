@@ -1,7 +1,7 @@
 require 'json'
 
 class Flash
-  
+
   attr_reader :flash_now
 
   def initialize(req)
@@ -24,7 +24,7 @@ class Flash
   end
 
   def store_flash(res)
-    attributes = { value: @flash_cookie.to_json, path: '/' }
+    attributes = { path: '/', value: @flash_cookie.to_json }
     res.set_cookie('_rails_lite_app_flash', attributes)
   end
 

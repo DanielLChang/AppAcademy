@@ -2,6 +2,7 @@ require 'active_support'
 require 'active_support/core_ext'
 require 'erb'
 require_relative './session'
+require_relative './flash'
 
 class ControllerBase
   attr_reader :req, :res, :params
@@ -43,7 +44,7 @@ class ControllerBase
     @already_built_response = true
 
     session.store_session(@res)
-    flash.store_flash(@res)
+    # flash.store_flash(@res)
 
   end
 
@@ -60,7 +61,7 @@ class ControllerBase
     @already_built_response = true
 
     session.store_session(@res)
-    flash.store_flash(@res)
+    # flash.store_flash(@res)
 
   end
 
