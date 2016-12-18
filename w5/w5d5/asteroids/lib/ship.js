@@ -1,10 +1,9 @@
-let Util = require('./utils');
+let Util = require('./util');
 let MovingObject = require('./moving_object');
 let Bullet = require('./bullet');
 
 const DEFAULTS = { COLOR: "#1F50D2", RADIUS: 10};
 
-Util.inherits(Ship, MovingObject);
 
 let Ship = function (options) {
   options.color = DEFAULTS.COLOR;
@@ -13,6 +12,8 @@ let Ship = function (options) {
 
   MovingObject.call(this, options);
 };
+
+Util.inherits(Ship, MovingObject);
 
 Ship.prototype.power = function (impulse) {
   this.vel[0] += impulse[0];

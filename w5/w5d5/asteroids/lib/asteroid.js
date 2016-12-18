@@ -1,4 +1,4 @@
-const Util = require("./utils");
+const Util = require("./util");
 const MovingObject = require("./moving_object");
 const Ship = require("./ship");
 const Bullet = require("./bullet");
@@ -9,7 +9,6 @@ const DEFAULTS = {
   SPEED: 1
 };
 
-Util.inherits(Asteroid, MovingObject);
 
 const Asteroid = function (options = {}) {
   options.color = DEFAULTS.COLOR;
@@ -19,6 +18,8 @@ const Asteroid = function (options = {}) {
 
   MovingObject.call(this, options);
 };
+
+Util.inherits(Asteroid, MovingObject);
 
 Asteroid.prototype.collideWith = function (other) {
   if (other instanceof Ship) {

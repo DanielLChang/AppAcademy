@@ -1,13 +1,14 @@
-const Util = require("./utils");
+const Util = require("./util");
 const MovingObject = require("./moving_object");
 
-Util.inherits(Bullet, MovingObject);
 
 const Bullet = function(options) {
   options.radius = Bullet.RADIUS;
 
   MovingObject.call(this, options);
 };
+
+Util.inherits(Bullet, MovingObject);
 
 Bullet.RADIUS = 2;
 Bullet.SPEED = 10;

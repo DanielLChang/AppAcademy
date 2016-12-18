@@ -1,4 +1,4 @@
-const Util = require("./utils");
+const Util = require("./util");
 const Ship = require('./ship');
 const Bullet = require('./bullet');
 const Asteroid = require('./asteroid');
