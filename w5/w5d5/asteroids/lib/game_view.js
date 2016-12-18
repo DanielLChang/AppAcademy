@@ -1,4 +1,4 @@
-const Game = require('./game.js');
+const Game = require('./game');
 // const Keymaster = require('./keymaster.js');
 
 const GameView = function(game, ctx) {

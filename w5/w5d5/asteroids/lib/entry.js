@@ -1,5 +1,5 @@
-const GameView = require('./game_view.js');
-const Game = require('./game.js');
+const GameView = require('./game_view');
+const Game = require('./game');
 // const Asteroid = require('./asteroid.js');
 // const MovingObject = require('./moving_object.js');
 

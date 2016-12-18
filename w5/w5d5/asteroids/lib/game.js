@@ -1,7 +1,7 @@
 const Util = require("./utils");
-const Ship = require('./ship.js');
-const Bullet = require('./bullet.js');
-const Asteroid = require('./asteroid.js');
+const Ship = require('./ship');
+const Bullet = require('./bullet');
+const Asteroid = require('./asteroid');
 
 const Game = function() {
   this.asteroids = [];

@@ -228,16 +228,18 @@
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
-	const MovingObject = __webpack_require__(4);
-	const Util = __webpack_require__(5);
+	let Util = __webpack_require__(5);
+	let MovingObject = __webpack_require__(4);
+	let Bullet = __webpack_require__(6);
 
-	const DEFAULTS = { COLOR: "#1F50D2", RADIUS: 10, SPEED: 10 };
+	const DEFAULTS = { COLOR: "#1F50D2", RADIUS: 10};
 
-	const Ship = function (options = {}) {
+	Util.inherits(Ship, MovingObject);
+
+	let Ship = function (options) {
 	  options.color = DEFAULTS.COLOR;
 	  options.radius = DEFAULTS.RADIUS;
-	  options.pos = options.pos;
-	  options.vel = options.vel || Util.randomVec(DEFAULTS.SPEED);
+	  options.vel = options.vel || [0, 0];
 
 	  MovingObject.call(this, options);
 	};
@@ -247,8 +249,31 @@
 	  this.vel[1] += impulse[1];
 	};
 
+	Ship.prototype.relocate = function () {
+	  this.pos = this.game.randomPosition();
+	  this.vel = [0, 0];
+	};
 
-	Util.inherits(Ship, MovingObject);
+	Ship.prototype.fireBullet = function () {
+	  let norm = Util.norm(this.vel);
+
+	  if (norm === 0) {
+	    return;
+	  }
+
+	  let relVel = Util.scale(Util.dir(this.vel), Bullet.SPEED);
+
+	  let bulletVel = [relVel[0] + this.vel[0], relVel[1] + this.vel[1]];
+
+	  let bullet = new Bullet({
+	    pos: this.pos,
+	    vel: bulletVel,
+	    color: this.color,
+	    game: this.game
+	  });
+
+	  this.game.bullets.push((bullet));
+	};
 
 	module.exports = Ship;
 
@@ -257,37 +282,51 @@
 /* 4 */
 /***/ function(module, exports) {
 
-	const Utils = ('./utils.js');
+	const Util = ('./utils');
 
 	const MovingObject = function(options) {
 	  this.pos = options.pos;
 	  this.vel = options.vel;
 	  this.radius = options.radius;
 	  this.color = options.color;
+	  this.game = options.game;
 	};
+
+	MovingObject.prototype.collideWith = function (other) {};
+	MovingObject.prototype.isWrappable = true;
 
 	MovingObject.prototype.draw = function(ctx) {
 	  ctx.fillStyle = this.color;
 	  ctx.beginPath();
-	  ctx.arc(
-	    this.pos[0],
-	    this.pos[1],
-	    this.radius,
-	    0,
-	    2 * Math.PI,
-	    false
-	  );
+	  ctx.arc(this.pos[0], this.pos[1], this.radius, 0, 2 * Math.PI, false);
 	  ctx.fill();
 	};
 
-	MovingObject.prototype.move = function() {
-	  this.pos = [this.pos[0] + this.vel[0], this.pos[1] + this.vel[1]];
+	const TIME_DELTA = 1000/60;
+
+	MovingObject.prototype.move = function (delta) {
+	  const vel = delta / TIME_DELTA,
+	      moveX = this.vel[0] * vel,
+	      moveY = this.vel[1] * vel;
+
+	  this.pos = [this.pos[0] + moveX, this.pos[1] + moveY];
+
+	  if (this.game.isOutOfBounds(this.pos)) {
+	    if (this.isWrappable) {
+	      this.pos = this.game.wrap(this.pos);
+	    } else {
+	      this.remove();
+	    }
+	  }
 	};
 
-	MovingObject.prototype.isCollidedWith = function (otherObject) {
-	  const distance = Math.sqrt((Math.pow((this.pos[0] - otherObject.pos[0]), 2) +
-	    Math.pow((this.pos[1] - otherObject.pos[1]), 2)));
-	  return distance < this.radius + otherObject.radius;
+	MovingObject.prototype.remove = function () {
+	  this.game.remove(this);
+	};
+
+	MovingObject.prototype.isCollidedWith = function (other) {
+	  const centerDist = Util.dist(this.pos, other.pos);
+	  return centerDist < (this.radius + other.radius);
 	};
 
 	module.exports = MovingObject;
