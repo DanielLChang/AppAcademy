@@ -12,10 +12,10 @@ const Ship = function (options = {}) {
   MovingObject.call(this, options);
 };
 
-// Ship.prototype.power = function (impulse) {
-//   this.vel[0] += impulse[0];
-//   this.vel[1] += impulse[1];
-// };
+Ship.prototype.power = function (impulse) {
+  this.vel[0] += impulse[0];
+  this.vel[1] += impulse[1];
+};
 
 
 Util.inherits(Ship, MovingObject);

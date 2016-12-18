@@ -30,7 +30,7 @@ Game.prototype.moveObjects = function(delta) {
 };
 
 Game.prototype.placeShip = function() {
-  this.ships.push(new Ship({pos: this.randomPosition()}));
+  this.ships.push(new Ship({pos: this.randomPosition(), vel: [0, 0]}));
 };
 
 Game.prototype.addAsteroids = function () {

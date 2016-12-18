@@ -8,6 +8,7 @@ function GameView (ctx, game) {
 
 GameView.prototype.start = function (ctx){
   const delta = [3, 4];
+  this.bindKeyHandlers();
 
   const animateCallback = () => {
     this.game.moveObjects(delta);
@@ -25,16 +26,16 @@ GameView.prototype.start = function (ctx){
 //   "d": [ 1,  0],
 // };
 //
-// GameView.prototype.bindKeyHandlers = function () {
-//   const ship = this.ship;
-//
-//   Object.keys(GameView.MOVES).forEach((k) => {
-//     let move = GameView.MOVES[k];
-//     key(k, function () { ship.power(move); });
-//   });
-//
-//   key("space", function () { ship.fireBullet() });
-// };
+GameView.prototype.bindKeyHandlers = function () {
+  const ship = this.ship;
+
+  Object.keys(GameView.MOVES).forEach((k) => {
+    let move = GameView.MOVES[k];
+    key(k, function () { ship.power(move); });
+  });
+
+  key("space", function () { ship.fireBullet() });
+};
 
 
 module.exports = GameView;
