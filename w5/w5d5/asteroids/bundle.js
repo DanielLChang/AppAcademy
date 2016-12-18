@@ -67,31 +67,19 @@
 	const Game = __webpack_require__(2);
 	// const Keymaster = require('./keymaster.js');
 
-	function GameView (ctx, game) {
+	const GameView = function(game, ctx) {
 	  this.ctx = ctx;
 	  this.game = game;
-	}
-
-	GameView.prototype.start = function (ctx){
-	  const delta = [3, 4];
-	  this.bindKeyHandlers();
-
-	  const animateCallback = () => {
-	    this.game.moveObjects(delta);
-	    this.game.checkCollisions();
-	    this.game.draw(ctx);
-	    setTimeout(animateCallback, 20);
-	  };
-	  animateCallback();
+	  this.ship = this.game.addShip();
 	};
 
-	// GameView.MOVES = {
-	//   "w": [ 0, -1],
-	//   "a": [-1,  0],
-	//   "s": [ 0,  1],
-	//   "d": [ 1,  0],
-	// };
-	//
+	GameView.MOVES = {
+	  "w": [ 0, -1],
+	  "a": [-1,  0],
+	  "s": [ 0,  1],
+	  "d": [ 1,  0],
+	};
+
 	GameView.prototype.bindKeyHandlers = function () {
 	  const ship = this.ship;
 
@@ -103,6 +91,22 @@
 	  key("space", function () { ship.fireBullet() });
 	};
 
+	GameView.prototype.start = function () {
+	  this.bindKeyHandlers();
+	  this.lastTime = 0;
+	  requestAnimationFrame(this.animate.bind(this));
+
+	};
+
+	GameView.prototype.animate = function(time) {
+	  const delta = time - this.lastTime;
+
+	  this.game.step(delta);
+	  this.game.draw(this.ctx);
+	  this.lastTime = time;
+
+	  requestAnimationFrame(this.animate.bind(this));
+	};
 
 	module.exports = GameView;
 
@@ -111,6 +115,7 @@
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
+	const Util = __webpack_require__(5);
 	const Ship = __webpack_require__(3);
 	const Bullet = __webpack_require__(6);
 	const Asteroid = __webpack_require__(7);
@@ -119,8 +124,8 @@
 	  this.asteroids = [];
 	  this.ships = [];
 	  this.bullets = [];
+
 	  this.addAsteroids();
-	  this.placeShip();
 	};
 
 	Game.DIM_X = 1000;
@@ -133,78 +138,83 @@
 	  return [RAND_X, RAND_Y];
 	};
 
+	Game.prototype.isOutOfBounds = function (pos) {
+	  return (pos[0] < 0) ||
+	         (pos[1] < 0) ||
+	         (pos[0] > Game.DIM_X) ||
+	         (pos[1] > Game.DIM_Y);
+	};
+
 	Game.prototype.moveObjects = function(delta) {
-	  this.asteroids.forEach (asteroid => {
-	    asteroid.pos = [asteroid.pos[0] + delta[0] * asteroid.vel[0],
-	      asteroid.pos[1] + delta[1] * asteroid.vel[1]];
-	    asteroid.pos = this.wrap(asteroid.pos);
-	    // debugger;
+	  this.allObjects().forEach(object => {
+	    object.move(delta);
 	  });
 	};
 
-	Game.prototype.placeShip = function() {
-	  this.ships.push(new Ship({pos: this.randomPosition(), vel: [0, 0]}));
+	Game.prototype.addShip = function() {
+	  this.ships.push(new Ship({
+	    pos: this.randomPosition(),
+	    game: this
+	  }));
 	};
 
 	Game.prototype.addAsteroids = function () {
 	  for (let i = 0; i < Game.NUM_ASTEROIDS; i++) {
-	    this.asteroids.push(new Asteroid({pos: this.randomPosition()}));
+	    this.asteroids.push(new Asteroid({ game: this }));
+	  }
+	};
+
+	Game.prototype.remove = function(object) {
+	  if (object instanceof Bullet) {
+	    this.bullets.splice(this.bullets.indexOf(object), 1);
+	  } else if (object instanceof Asteroid) {
+	    this.asteroids.splice(this.asteroids.indexOf(object), 1);
+	  } else if (object instanceof Ship) {
+	    this.ships.splice(this.ships.indexOf(object), 1);
 	  }
 	};
 
 	Game.prototype.wrap = function(pos) {
-	  if (pos[0] > Game.DIM_X) {
-	    pos[0] = 0;
-	  } else if (pos[0] < 0) {
-	    pos[0] = Game.DIM_X;
-	  }
-	  if (pos[1] > Game.DIM_Y) {
-	    pos[1] = 0;
-	  } else if (pos[1] < 0) {
-	    pos[1] = Game.DIM_Y;
-	  }
-	  return pos;
+	  const NEW_X = Util.wrap(pos[0], Game.DIM_X);
+	  const NEW_Y = Util.wrap(pos[1], Game.DIM_Y);
+	  return [NEW_X, NEW_Y];
+	};
+
+	Game.prototype.step = function(delta) {
+	  this.moveObjects(delta);
+	  this.checkCollisions();
 	};
 
 	Game.prototype.checkCollisions = function () {
-	  this.asteroids.forEach( asteroid => {
-	    if (asteroid.isCollidedWith(this.ships[0])) {
-	      this.ships.pop();
-	      this.placeShip();
+	  const allObjects = this.allObjects();
+
+	  for (let i = 0; i < allObjects.length; i++) {
+	    for (let j = 0; j < allObjects.length; j++) {
+	      const object1 = allObjects[i];
+	      const object2 = allObjects[j];
+
+	      if (object1.isCollidedWith(object2)) {
+	        const collision = object1.collideWith(object2);
+	        if (collision) {
+	          return;
+	        }
+	      }
 	    }
-	  });
+	  }
 	};
 
 	Game.prototype.draw = function(ctx) {
-	  ctx.clearRect(
-	    0,
-	    0,
-	    Game.DIM_X,
-	    Game.DIM_Y
-	  );
+	  ctx.clearRect(0, 0, Game.DIM_X, Game.DIM_Y);
 	  ctx.fillStyle = "#000000";
-	  ctx.fillRect(
-	    0,
-	    0,
-	    Game.DIM_X,
-	    Game.DIM_Y
-	  );
-	  this.allObjects().forEach (object => {
+	  ctx.fillRect(0, 0, Game.DIM_X, Game.DIM_Y);
+
+	  this.allObjects().forEach(object => {
 	    // debugger;
 	    object.draw(ctx);
 	  });
-	  ctx.clearRect(
-	    Game.DIM_X,
-	    0,
-	    Game.DIM_X,
-	    Game.DIM_Y
-	  );
-	  ctx.clearRect(
-	    0,
-	    Game.DIM_Y,
-	    Game.DIM_X * 2,
-	    Game.DIM_Y
-	  );
+
+	  ctx.clearRect(Game.DIM_X, 0, Game.DIM_X, Game.DIM_Y);
+	  ctx.clearRect(0, Game.DIM_Y, Game.DIM_X * 2, Game.DIM_Y);
 	};
 
 	Game.prototype.allObjects = function () {
@@ -288,23 +298,46 @@
 /***/ function(module, exports) {
 
 	const Util = {
-	  inherits(childClass, parentClass) {
-	    function Surrogate () {}
-	    Surrogate.prototype = parentClass.prototype;
-	    childClass.prototype = new Surrogate();
-	    childClass.prototype.constructor = childClass;
+
+	  dir (vec) {
+	    var norm = Util.norm(vec);
+	    return Util.scale(vec, 1 / norm);
 	  },
-	  // Return a randomly oriented vector with the given length.
+
+	  dist (pos1, pos2) {
+	    return Math.sqrt(
+	      Math.pow(pos1[0] - pos2[0], 2) + Math.pow(pos1[1] - pos2[1], 2)
+	    );
+	  },
+
+	  norm (vec) {
+	    return Util.dist([0, 0], vec);
+	  },
+
 	  randomVec (length) {
-	    const deg = 2 * Math.PI * Math.random();
+	    var deg = 2 * Math.PI * Math.random();
 	    return Util.scale([Math.sin(deg), Math.cos(deg)], length);
 	  },
-	  // Scale the length of a vector by the given amount.
+
 	  scale (vec, m) {
 	    return [vec[0] * m, vec[1] * m];
+	  },
+	  inherits (ChildClass, BaseClass) {
+	    function Surrogate () { this.constructor = ChildClass; }
+	    Surrogate.prototype = BaseClass.prototype;
+	    ChildClass.prototype = new Surrogate();
+	  },
+
+	  wrap (coord, max) {
+	    if (coord < 0) {
+	      return max - (coord % max);
+	    } else if (coord > max) {
+	      return coord % max;
+	    } else {
+	      return coord;
+	    }
 	  }
 	};
-
 
 	module.exports = Util;
 
@@ -313,7 +346,7 @@
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
-	const Util = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"./util\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
+	const Util = __webpack_require__(5);
 	const MovingObject = __webpack_require__(4);
 
 	Util.inherits(Bullet, MovingObject);
@@ -336,7 +369,7 @@
 /* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
-	const Util = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"./util\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
+	const Util = __webpack_require__(5);
 	const MovingObject = __webpack_require__(4);
 	const Ship = __webpack_require__(3);
 	const Bullet = __webpack_require__(6);
@@ -352,7 +385,7 @@
 	const Asteroid = function (options = {}) {
 	  options.color = DEFAULTS.COLOR;
 	  options.radius = DEFAULTS.RADIUS;
-	  options.pos = options.pos;
+	  options.pos = options.pos || options.game.randomPosition();
 	  options.vel = options.vel || Util.randomVec(DEFAULTS.SPEED);
 
 	  MovingObject.call(this, options);

@@ -1,31 +1,19 @@
 const Game = require('./game.js');
 // const Keymaster = require('./keymaster.js');
 
-function GameView (ctx, game) {
+const GameView = function(game, ctx) {
   this.ctx = ctx;
   this.game = game;
-}
-
-GameView.prototype.start = function (ctx){
-  const delta = [3, 4];
-  this.bindKeyHandlers();
-
-  const animateCallback = () => {
-    this.game.moveObjects(delta);
-    this.game.checkCollisions();
-    this.game.draw(ctx);
-    setTimeout(animateCallback, 20);
-  };
-  animateCallback();
+  this.ship = this.game.addShip();
 };
 
-// GameView.MOVES = {
-//   "w": [ 0, -1],
-//   "a": [-1,  0],
-//   "s": [ 0,  1],
-//   "d": [ 1,  0],
-// };
-//
+GameView.MOVES = {
+  "w": [ 0, -1],
+  "a": [-1,  0],
+  "s": [ 0,  1],
+  "d": [ 1,  0],
+};
+
 GameView.prototype.bindKeyHandlers = function () {
   const ship = this.ship;
 
@@ -37,5 +25,21 @@ GameView.prototype.bindKeyHandlers = function () {
   key("space", function () { ship.fireBullet() });
 };
 
+GameView.prototype.start = function () {
+  this.bindKeyHandlers();
+  this.lastTime = 0;
+  requestAnimationFrame(this.animate.bind(this));
+
+};
+
+GameView.prototype.animate = function(time) {
+  const delta = time - this.lastTime;
+
+  this.game.step(delta);
+  this.game.draw(this.ctx);
+  this.lastTime = time;
+
+  requestAnimationFrame(this.animate.bind(this));
+};
 
 module.exports = GameView;
