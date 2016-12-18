@@ -62,15 +62,16 @@
 
 /***/ },
 /* 1 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
-	const Game = __webpack_require__(2);
+	// const Game = require('./game');
 	// const Keymaster = require('./keymaster.js');
 	
 	const GameView = function(game, ctx) {
 	  this.ctx = ctx;
 	  this.game = game;
 	  this.ship = this.game.addShip();
+	  // debugger;
 	};
 	
 	GameView.MOVES = {
@@ -95,7 +96,6 @@
 	  this.bindKeyHandlers();
 	  this.lastTime = 0;
 	  requestAnimationFrame(this.animate.bind(this));
-	
 	};
 	
 	GameView.prototype.animate = function(time) {
@@ -130,7 +130,7 @@
 	
 	Game.DIM_X = 1000;
 	Game.DIM_Y = 500;
-	Game.NUM_ASTEROIDS = 10;
+	Game.NUM_ASTEROIDS = 15;
 	
 	Game.prototype.randomPosition = function() {
 	  const RAND_X = Game.DIM_X * Math.random();
@@ -152,10 +152,14 @@
 	};
 	
 	Game.prototype.addShip = function() {
-	  this.ships.push(new Ship({
+	  const ship = new Ship({
 	    pos: this.randomPosition(),
 	    game: this
-	  }));
+	  });
+	
+	  this.ships.push(ship);
+	
+	  return ship;
 	};
 	
 	Game.prototype.addAsteroids = function () {

@@ -13,7 +13,7 @@ const Game = function() {
 
 Game.DIM_X = 1000;
 Game.DIM_Y = 500;
-Game.NUM_ASTEROIDS = 10;
+Game.NUM_ASTEROIDS = 15;
 
 Game.prototype.randomPosition = function() {
   const RAND_X = Game.DIM_X * Math.random();
@@ -35,10 +35,14 @@ Game.prototype.moveObjects = function(delta) {
 };
 
 Game.prototype.addShip = function() {
-  this.ships.push(new Ship({
+  const ship = new Ship({
     pos: this.randomPosition(),
     game: this
-  }));
+  });
+
+  this.ships.push(ship);
+
+  return ship;
 };
 
 Game.prototype.addAsteroids = function () {

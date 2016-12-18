@@ -1,10 +1,11 @@
-const Game = require('./game');
+// const Game = require('./game');
 // const Keymaster = require('./keymaster.js');
 
 const GameView = function(game, ctx) {
   this.ctx = ctx;
   this.game = game;
   this.ship = this.game.addShip();
+  // debugger;
 };
 
 GameView.MOVES = {
@@ -29,7 +30,6 @@ GameView.prototype.start = function () {
   this.bindKeyHandlers();
   this.lastTime = 0;
   requestAnimationFrame(this.animate.bind(this));
-
 };
 
 GameView.prototype.animate = function(time) {
