@@ -80,6 +80,18 @@ Game.prototype.draw = function(ctx) {
     // debugger;
     object.draw(ctx);
   });
+  ctx.clearRect(
+    Game.DIM_X,
+    0,
+    Game.DIM_X,
+    Game.DIM_Y
+  );
+  ctx.clearRect(
+    0,
+    Game.DIM_Y,
+    Game.DIM_X * 2,
+    Game.DIM_Y
+  );
 };
 
 Game.prototype.allObjects = function () {
