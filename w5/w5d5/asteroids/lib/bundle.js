@@ -128,9 +128,9 @@
 	  this.addAsteroids();
 	};
 	
-	Game.DIM_X = 1000;
-	Game.DIM_Y = 500;
-	Game.NUM_ASTEROIDS = 15;
+	Game.DIM_X = window.innerWidth;
+	Game.DIM_Y = window.innerHeight;
+	Game.NUM_ASTEROIDS = 25;
 	
 	Game.prototype.randomPosition = function() {
 	  const RAND_X = Game.DIM_X * Math.random();
@@ -396,6 +396,7 @@
 	
 	const Bullet = function(options) {
 	  options.radius = Bullet.RADIUS;
+	  options.color = "green";
 	
 	  MovingObject.call(this, options);
 	};
