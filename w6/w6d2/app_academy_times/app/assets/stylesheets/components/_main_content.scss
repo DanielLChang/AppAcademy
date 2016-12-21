@@ -1,94 +1,81 @@
 .main-content {
-  display: flex;
+	margin-top: 10px;
 }
 
-h1 {
-  font-size: 25px;
-  font-weight: bold;
+.main-content header {
+	font-weight: bold;
+}
+
+.main-story {
+	margin-top: 10px;
+}
+
+.main-story section {
+	margin-bottom: 20px;
+}
+
+.byline {
+	color: $gray;
+	margin: 4px 1px;
+	font-family: $serif;
+	font-weight: 400;
+	font-size: 11px;
+}
+
+.main-story ul {
+	list-style: initial;
+	padding-left: 15px;
+}
+
+.main-story ul li{
+	margin: 10px 0;
+	line-height: 1.5;
+}
+
+/*
+	Comments Link with Blue Square
+*/
+
+.comments {
+	color: #326891;
+	font-family: $sans-serif;
+	font-size: 10px;
+	vertical-align: bottom;
 }
 
 iframe {
-  position: relative;
+	margin-bottom: 10px;
 }
 
-iframe > ul {
-  display: flex;
-  position: absolute;
-
+article {
+	margin: 10px 0;
 }
 
-.col-1 {
-  font-family: $serif;
+article hr {
+	width: 50%;
+	color: $gray;
 }
 
-.col-1 h1 {
-  font-style: italic;
-  text-decoration: underline;
-  padding: 20px 0 10px 0;
+.kicker {
+	text-transform: uppercase;
+	font-size: 10px;
 }
 
-.col-1 h2 {
-  font-size: 10px;
-  color: $gray;
-  padding-bottom: 10px;
+.opinion {
+	margin-top: 10px;
 }
 
-.col-1 li {
-  padding-bottom: 10px;
+.opinions-list {
+	list-style: initial;
+	padding-left: 15px;
+	font-weight: bold;
+	font-size: 10px;
 }
 
-.col-1 ul {
-  list-style: circle;
-  padding-left: 15px;
+.opinions-list li {
+	margin: 5px 0;
 }
 
-.comments {
-  color: $blue;
-  text-decoration: underline;
-}
-
-.col-2 {
-  font-family: $serif;
-}
-
-.col-2 li {
-  padding: 20px 0 10px;
-  border-bottom: 1px solid $light-gray;
-}
-
-.video-caption {
-  padding: 10px 0 5px 0;
-  text-align: center;
-  font-size: 12px;
-}
-
-.col-2 h1 {
-  text-decoration: underline;
-  font-size: 12px;
-  padding-bottom: 10px;
-}
-
-.col-2 h2 {
-  font-size: 10px;
-  color: $gray;
-  padding-bottom: 10px;
-}
-
-.col-title {
-
-  font-size: 12px;
-  font-weight: bold;
-  text-align: center;
-  padding: 10px;
-}
-
-.article-topic {
-  font-size: 12px;
-  text-transform: uppercase;
-}
-
-.article-title {
-  font-size: 12px;
-  font-weight: bold;
-  text-decoration: underline;
+.opinion-sign-up {
+	margin: 20px 0;
 }
