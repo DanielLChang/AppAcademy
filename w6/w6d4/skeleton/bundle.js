@@ -42,9 +42,20 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
+
+	const Router = __webpack_require__(1);
+	const Inbox = __webpack_require__(2);
+
+	let routes = {
+	  inbox: Inbox
+	};
 
 	document.addEventListener("DOMContentLoaded", () => {
+	  let content = document.querySelector('.content');
+	  let router = new Router(content, routes);
+	  router.start();
+
 	  let navItems = Array.from(document.querySelectorAll('.sidebar-nav li'));
 	  window.location.hash = "#inbox";
 
@@ -55,6 +66,55 @@
 	    });
 	  });
 	});
+
+
+/***/ },
+/* 1 */
+/***/ function(module, exports) {
+
+	class Router {
+	  constructor(node, routes) {
+	    this.node = node;
+	    this.routes = routes;
+	  }
+
+	  start() {
+	    this.render();
+	    window.addEventListener("hashchange", () => {
+	      this.render();
+	    });
+	  }
+
+	  render() {
+	    this.node.innerHTML = "";
+	    let component = this.activeRoute();
+	    if (component) {
+	      this.node.appendChild(component.render());
+	    }
+	  }
+
+	  activeRoute() {
+	    let hash = window.location.hash.slice(1);
+	    let component = this.routes[hash];
+	    return component;
+	  }
+	}
+
+	module.exports = Router;
+
+
+/***/ },
+/* 2 */
+/***/ function(module, exports) {
+
+	module.exports = {
+	  render() {
+	    let container = document.createElement("ul");
+	    container.className = "messages";
+	    container.innerHTML = "An Inbox Message";
+	    return container;
+	  }
+	};
 
 
 /***/ }
