@@ -46,9 +46,11 @@
 
 	const Router = __webpack_require__(1);
 	const Inbox = __webpack_require__(2);
+	const Sent = __webpack_require__(4);
 
 	let routes = {
-	  inbox: Inbox
+	  inbox: Inbox,
+	  sent: Sent
 	};
 
 	document.addEventListener("DOMContentLoaded", () => {
@@ -105,14 +107,99 @@
 
 /***/ },
 /* 2 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
+
+	const MessageStore = __webpack_require__(3);
 
 	module.exports = {
 	  render() {
 	    let container = document.createElement("ul");
+	    let messages = MessageStore.getInboxMessages();
+
 	    container.className = "messages";
-	    container.innerHTML = "An Inbox Message";
+	    messages.forEach( message => {
+	      container.appendChild(this.renderMessage(message));
+	    });
+
 	    return container;
+	  },
+
+	  renderMessage(message) {
+	    let el = document.createElement("li");
+	    el.className = "message";
+	    el.innerHTML = `<span class="from">${message.from}</span>
+	                    <span class="subject">${message.subject}</span> -
+	                    <span class="body">${message.body}</span>`;
+	    return el;
+	  }
+	};
+
+
+/***/ },
+/* 3 */
+/***/ function(module, exports) {
+
+	let messages = {
+	  sent: [
+	    {to: "friend@mail.com", subject: "Check this out", body: "It's so cool"},
+	    {to: "person@mail.com", subject: "zzz", body: "so booring"}
+	  ],
+	  inbox: [
+	    {from: "grandma@mail.com", subject: "Fwd: Fwd: Fwd: Check this out", body:
+	"Stay at home mom discovers cure for leg cramps. Doctors hate her"},
+	  {from: "person@mail.com", subject: "Questionnaire", body: "Take this free quiz win $1000 dollars"}
+	  ]
+	};
+
+	let user = "user@user.com";
+
+	class Message {
+	  constructor(from = user, to = "", subject = "", body = "") {
+	    this.from = from;
+	    this.to = to;
+	    this.subject = subject;
+	    this.body = body;
+	  }
+	}
+
+	const MessageStore = {
+	  getInboxMessages() {
+	    return messages.inbox.slice();
+	  },
+	  getSentMessages() {
+	    return messages.sent.slice();
+	  }
+	};
+
+	module.exports = MessageStore;
+
+
+/***/ },
+/* 4 */
+/***/ function(module, exports, __webpack_require__) {
+
+	const MessageStore = __webpack_require__(3);
+
+	module.exports = {
+	  render() {
+	    let container = document.createElement("ul");
+	    let messages = MessageStore.getSentMessages();
+
+	    container.className = "messages";
+	    messages.forEach( message => {
+	      container.appendChild(this.renderMessage(message));
+	    });
+
+	    return container;
+	  },
+
+	  renderMessage(message) {
+	    let el = document.createElement("li");
+	    el.className = "message";
+	    el.innerHTML = `<span class="to">${message.to}</span>
+	                    <span class="subject">${message.subject}</span> -
+	                    <span class="body">${message.body}</span>`;
+	    return el;
 	  }
 	};
 
