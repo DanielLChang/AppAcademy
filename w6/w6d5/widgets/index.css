@@ -1,0 +1,37 @@
+div, h1, li, ul, article {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  font: inherit;
+  color: inherit;
+  text-align: inherit;
+  text-decoration: inherit;
+  vertical-align: inherit;
+  box-sizing: inherit;
+  background: transparent;
+  list-style: none;
+}
+
+.group:after {
+  content: '';
+  display: block;
+  clear: both;
+}
+
+.tabs {
+  height: 15%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.tab {
+  border: 1px solid black;
+  border-radius: 5px;
+}
+
+.tabs-and-content {
+  border: 1px solid  black;
+  width: 200px;
+  height: 300px;
+}
