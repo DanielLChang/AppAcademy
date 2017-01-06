@@ -1,0 +1,14 @@
+<li>
+  <ul>
+    {this.props.pokemonDetail.moves.map((move, idx) => (
+      <li key={idx}>{move}</li>
+    ))}
+  </ul>
+</li>
+<li>
+  <ul>
+    {this.props.pokemonDetail.items.map((item, idx) => (
+      <li key={idx}>{item}</li>
+    ))}
+  </ul>
+</li>
