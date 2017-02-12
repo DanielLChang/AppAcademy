@@ -2,7 +2,7 @@ class AVLTreeNode
   attr_accessor :link, :balance, :value
 
   def initialize(value)
-
+    
   end
 end
 
