@@ -10,7 +10,7 @@ end
 
 class AVLTree
   def initialize
-
+    @root = nil
   end
 
   def insert(value)
